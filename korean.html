@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <!-- JQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script type = "text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script type = "text/javascript" src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <script type = "text/javascript"  src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Datatable -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/responsive/2.2.3/css/responsive.dataTables.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.11.2/moment.min.js"></script>
+    <script type = "text/javascript"  src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type = "text/javascript"  src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
+    <script type = "text/javascript"  src="https://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
+
+  </head>
+  <body>
+    <!-- Vocabulary table -->
+    <div class="card m-4">
+      <div class="card-header text-center">
+        <h5 class="font-weight-bold">Code Monkey King's Korean vocabulary</h5>
+      </div>
+      <div class="card-body">
+        <table id="stats" class="display table nowrap responsive" style="width: 100%"></table>
+      </div>
+    </div>
+    
+    <!-- Vocabulary data -->
+    <script type="text/javascript">
+      var vocabulary = [
+        ['general',
+         'pronoun',
+         'I',
+         '나 (저는)',
+         '', '', '',
+         `<br>
+          나 이거 알아 (informal) - I know this<br>
+          나 이거 좋아해 (informal) - I like this<br>
+          나 너 좋아해 (informal) - I like you<br>
+          나 바나나 좋아해 (informal) - I like banana<br>
+         `
+        ],
+        ['general',
+         'pronoun',
+         'You',
+         '너',
+         '', '', '',
+         `<br>
+          나 너 좋아해 (informal) - I like you<br>
+         `
+        ],
+        ['general',
+         'pronoun',
+         'My / Mine',
+         '내, 나의 / 내꺼',
+         '', '', '',
+         `<br>
+          내 폰 (informal) - My phone<br>
+         `
+        ],
+        ['general',
+         'pronoun',
+         'Your / Yours',
+         '니, 너의 / 니꺼',
+         '', '', '',
+         `<br>
+          니 폰 (informal) - Your phone<br>
+         `
+        ],
+        ['general',
+         'pronoun',
+         'We / Our / Ours',
+         '우리, 우리의 / 우리꺼',
+         '', '', '',
+         `<br>
+          우리의 땅 (informal) - Our land<br>
+         `
+        ],
+        ['general',
+         'pronoun',
+         'He or She / He or She',
+         '쟤 / 걔','','', '',
+         `<br>
+          쟤 이거 잘해 (informal) - He/She is good at this (over there)<br>
+          걔 이거 잘해 (informal) - He/She is good at this (we\'re talking about)<br>
+          걔 요리 잘해 (informal) - He/She is good at cooking (we\'re talking about)<br>
+          걔 요리 좋아해 (informal) - He/She likes cooking (we\'re talking about)<br>
+          걔는 프로그래머가 아니야 (informal) - He/She is not a programmer<br>
+         `
+        ],
+        ['general',
+         'determiner',
+         'this / this one',
+         '이 / 이거',
+         '', '', '',
+         '이거 책 (informal) - this book'
+        ],
+        ['general',
+         'determiner',
+         'that / that one',
+         '그 / 저거',
+         '', '', '',
+         `<br>
+          그 사람 (informal) - that person (we're talking about)<br>
+          저거 책 (informal) - that book (over there)<br>
+         `
+        ],
+        ['general',
+         'determiner',
+         'now',
+         '지금',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'determiner',
+         'today',
+         '오늘',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'determiner',
+         'yesterday',
+         '어제',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'determiner',
+         'tomorrow',
+         '내일',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'noun',
+         'movie',
+         '영화',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'noun',
+         'person / person you respect',
+         '사람 / 분',
+         '', '', '',
+         `<br>
+          이 사람 (informal) - this person<br>
+          이 분 (informal) - this person<br>
+         `
+        ],
+        ['general',
+         'noun',
+         'book',
+         '책',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'noun',
+         'word',
+         '워드',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'noun',
+         'words',
+         '말',
+         '', '', '',
+         ``
+        ],
+        ['foods',
+         'noun',
+         'cooking',
+         '요리',
+         '', '', '',
+         ``
+        ],
+        ['foods',
+         'noun',
+         'banana',
+         '바나나',
+         '', '', '',
+         ``
+        ],
+        ['music',
+         'noun',
+         'song',
+         '노래',
+         '', '', '',
+         ``
+        ],
+        ['music',
+         'noun',
+         'music',
+         '음악',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'verb',
+         'to be',
+         '이다',
+         '이야 (이에요)',
+         '였어 (였어요)',
+         '일 거야 (일 거예요)',
+         `<br>
+          이거 집 이야 (informal) - This is a house<br>
+          이거 책 이에요 (informal, polite) - This is a book<br>
+          <br>
+          저는 여기 였어요 (informal, polite) - I was here<br>
+          이거 원숭이 왕 였어요 (informal, polite) - This was the Monkey King
+          저는 그곳에 일 거예요 (informal, polite) - I will be there
+         `
+        ],
+        ['general',
+         'verb',
+         'to have',
+         '있다',
+         '있어, (있어요)',
+         '있었어 (있었어요)',
+         '갈 거야 (갈 거예요)',
+         ``
+        ],
+        ['general',
+         'verb',
+         'to go',
+         '가다',
+         '가, (가요)',
+         '갔어 (갔어요)',
+         '갈 거야 (갈 거예요)',
+         ``
+        ],
+        ['general',
+         'verb',
+         'to see/watch/look',
+         '보다',
+         '봐, (봐요)',
+         '봤어 (봤어요)',
+         '볼 거야 (볼 거예요)',
+         ``
+        ],
+        ['general',
+         'verb',
+         'to come',
+         '오다',
+         '와, (와요)',
+         '왔어 (왔어요)',
+         '올 거야 (올 거예요)',
+         ``
+        ],
+        ['general',
+         'verb',
+         'to know',
+         '알다',
+         '알아, (알아요)',
+         '알았어 (알았어요)',
+         '알 거야 (알 거예요)',
+         ``
+        ],
+        ['general',
+         'verb',
+         'to (not) know',
+         '몰라다',
+         '몰라, (몰라요)',
+         '몰랐어 (몰랐어요)',
+         '몰랄 거야 (몰랄 거예요)',
+         ``
+        ],
+        ['general',
+         'verb',
+         'to write',
+         '쓰다',
+         '써, (써요)',
+         '썼어 (썼어요)',
+         '쓸 거야 (쓸 거예요)',
+         ``
+        ],
+        ['general',
+         'verb',
+         'to do well',
+         '잘하다',
+         '잘해 (잘해요)',
+         '잘했어 (잘했어요)',
+         '잘할 거야 (잘할 거예요)',
+         `<br>
+          나 이거 잘해 (informal) - I'm good at this</br>`
+        ]
+      ];
+      
+      $('#stats').DataTable({
+        data: vocabulary,
+        order: [ [ 1, 'asc' ] ],
+        columns: [
+          { title: 'category' },
+          { title: 'Type' },
+          { title: 'Word(s)' },
+          { title: 'Base form' },
+          { title: 'Present tense' },
+          { title: 'Past tense' },
+          { title: 'Future tense' },
+          { title: 'Phrases' }
+        ]
+      });
+    </script>
+  </body>
+</html>
+
+
+
+
