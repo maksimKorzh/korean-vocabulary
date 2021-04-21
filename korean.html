@@ -18,22 +18,69 @@
     <script type = "text/javascript"  src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script type = "text/javascript"  src="https://cdn.datatables.net/responsive/2.2.3/js/dataTables.responsive.min.js"></script>
     <script type = "text/javascript"  src="https://cdn.datatables.net/plug-ins/1.10.15/dataRender/datetime.js"></script>
+    
+    <!-- Analytics -->
+    <script type="text/javascript">
+      if (window.location.href.includes('github')) {
+        $.post('https://maksimkorzh.pythonanywhere.com/analytics/api/post', {
+          date: new Date,
+          url: window.location.href
+        });
+      }
+    </script>
 
   </head>
   <body>
     <!-- Vocabulary table -->
     <div class="card m-4">
       <div class="card-header text-center">
-        <h5 class="font-weight-bold">Code Monkey King's Korean vocabulary</h5>
+        <h5 class="font-weight-bold">Code Monkey King's Korean vocabulary
+          <small><hr>내일은 오늘보다 추워질 수도 있으니까<br>
+          옷을 따뜻하게 입어야 될 것 같아요<br>
+          <hr>
+          Tomorrow might become colder than today,<br>
+          so I think we'll have to dress warmly *<br>
+          </small>
+        </h5>
       </div>
       <div class="card-body">
         <table id="stats" class="display table nowrap responsive" style="width: 100%"></table>
       </div>
+      <small class="text-right m-2">* 12 grammar points sentence from <a href="https://www.youtube.com/watch?v=aH04sV9W7Ao">Talk To Me in Korean</a> YouTube channel</small>
+
     </div>
     
     <!-- Vocabulary data -->
     <script type="text/javascript">
       var vocabulary = [
+        ['general',
+         'particle',
+         'General topic markers',
+         '은 / 는',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'particle',
+         'Specific subject markers',
+         '이 / 가',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'particle',
+         'Connector (AND)',
+         '와',
+         '', '', '',
+         `남자와 여자 (informal) - man and woman`
+        ],
+        ['general',
+         'particle',
+         'Belong to, of, \'s',
+         '의',
+         '', '', '',
+         `오공의 직원 (informal) - Wukong's staff`
+        ],
         ['general',
          'pronoun',
          'I',
@@ -136,6 +183,27 @@
          'determiner',
          'tomorrow',
          '내일',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'noun',
+         'name',
+         '이름',
+         '', '', '',
+         `제 이름은 송 오공 입니다 (formal) - My name is Song Wukong`
+        ],
+        ['general',
+         'noun',
+         'woman',
+         '여자',
+         '', '', '',
+         ``
+        ],
+        ['general',
+         'noun',
+         'man',
+         '남자',
          '', '', '',
          ``
         ],
