@@ -5,6 +5,9 @@
 #
 ##########################################
 
+# print debug info
+print('Loading...')
+    
 # packages
 from konlpy.tag import Okt
 import requests
@@ -38,27 +41,6 @@ with open('korean.txt') as f:
 # append full sentence to the list of tokens
 tokenized_text.append((korean_text, 'Full sentence'))
 
-'''
-korean_text = '내일은 오늘보다 추워질 수도 있으니까 옷을 따뜻하게 입어야 될 것 같아요'
-tokenized_text = [
-    ('내일', 'Noun'),
-    ('은', 'Josa'),
-    ('오늘', 'Noun'),
-    ('보다', 'Josa'),
-    ('추워지다', 'Verb'),
-    ('수도', 'Noun'),
-    ('있다', 'Adjective'),
-    ('옷', 'Noun'),
-    ('을', 'Josa'),
-    ('따뜻하다', 'Adjective'),
-    ('입다', 'Verb'),
-    ('되다', 'Verb'),
-    ('것', 'Noun'),
-    ('같다', 'Adjective'),
-    ('내일은 오늘보다 추워질 수도 있으니까 옷을 따뜻하게 입어야 될 것 같아요', 'Full sentence')
-]
-'''
-
 # loop over tokens
 for token in tokenized_text:
     # translate.com POST request data payload
@@ -79,7 +61,10 @@ for token in tokenized_text:
     print('Translating...', token[0] + ': ', translated_text, ', Type:', token[1])
     
     # optionally request conjugation details
-    if ('다' in token[0] and token[1] != 'Full sentence'):
+    if ('다' in token[0] and
+        token[1] != 'Full sentence' and
+        token[1] in ['Verb', 'Adverb', 'Adjective']
+       ):
         # get conjugation details
         response = requests.get('https://koreanverb.app/?search=' + token[0])
 
@@ -104,6 +89,15 @@ for token in tokenized_text:
     
     # init details
     congation_details = []
+    
+    # skip punctuation, foreign words and duplicates
+    try:
+        if (token[1] == 'Punctuation' or token[1] == 'Foreign' or vocabulary[1]['Word'] == token[0]):
+            # print debug info
+            print('Skipping garbage...', token[0] + ': ', translated_text, ', Type:', token[1])
+            continue
+    except:
+        pass
 
     # append token to vocabulary
     vocabulary.append({
@@ -116,9 +110,10 @@ for token in tokenized_text:
     })
     
     try:
-        vocabulary[-1]['Present tense'] = conjugation_details[0].split(': ')[-1]
-        vocabulary[-1]['Past tense'] = conjugation_details[1].split(': ')[-1]
-        vocabulary[-1]['Future tense'] = conjugation_details[2].split(': ')[-1]
+        if (token[0][0] == conjugation_details[0].split(': ')[-1][0]):
+            vocabulary[-1]['Present tense'] = conjugation_details[0].split(': ')[-1]
+            vocabulary[-1]['Past tense'] = conjugation_details[1].split(': ')[-1]
+            vocabulary[-1]['Future tense'] = conjugation_details[2].split(': ')[-1]
     except:
         pass
 
@@ -187,7 +182,9 @@ html_template = '''
     </div>
   </body>
   <script type="text/javascript">
-    $('#vocabulary').DataTable();
+    $('#vocabulary').dataTable({
+      "bSort": false
+    });
   </script>
   
 </html>'''
@@ -196,8 +193,8 @@ html_template = '''
 html_output = Environment().from_string(html_template).render(
     results=vocabulary,
     fieldnames=[col for col in vocabulary[0].keys()],
-    korean_text=korean_text,
-    full_translation=vocabulary[-1]['Translation'],
+    korean_text=korean_text.replace('\n', '<br>'),
+    full_translation=vocabulary[-1]['Translation'].replace('.', '.<br>').replace(',', ',<br>'),
     len=len
 )
 
