@@ -14,6 +14,7 @@ import requests
 from bs4 import BeautifulSoup
 from jinja2 import Environment
 import json
+import csv
 
 # vocabulary
 vocabulary = []
@@ -201,8 +202,6 @@ html_output = Environment().from_string(html_template).render(
 # write HTML file
 with open('./html/vocabulary.html', 'w') as f:
     f.write(html_output)
-
-
 
 
 
