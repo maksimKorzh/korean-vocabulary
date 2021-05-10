@@ -13,6 +13,7 @@ from konlpy.tag import Okt
 import requests
 from bs4 import BeautifulSoup
 from jinja2 import Environment
+from tqdm import tqdm
 import json
 import csv
 
@@ -42,81 +43,97 @@ with open('korean.txt') as f:
 # append full sentence to the list of tokens
 tokenized_text.append((korean_text, 'Full sentence'))
 
+# word count
+count = 0
+
 # loop over tokens
 for token in tokenized_text:
-    # translate.com POST request data payload
-    payload = {
-        'text_to_translate': token[0],
-        'source_lang': 'ko',
-        'translated_lang': 'en',
-        'use_cache_only': 'false'
-    }
+    try:
+        # translate.com POST request data payload
+        payload = {
+            'text_to_translate': token[0],
+            'source_lang': 'ko',
+            'translated_lang': 'en',
+            'use_cache_only': 'false'
+        }
 
-    # make HTTP POST request to translate.com
-    response = requests.post('https://www.translate.com/translator/ajax_translate', data=payload)
+        # make HTTP POST request to translate.com
+        response = requests.post(
+            'https://www.translate.com/translator/ajax_translate',
+            headers={'user-agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/79.0.3945.130 Safari/537.36'},
+            data=payload
+        )
 
-    # parse the response
-    translated_text = json.loads(response.text)['translated_text']
-    
-    # print debug info
-    print('Translating...', token[0] + ': ', translated_text, ', Type:', token[1])
-    
-    # optionally request conjugation details
-    if ('다' in token[0] and
-        token[1] != 'Full sentence' and
-        token[1] in ['Verb', 'Adverb', 'Adjective']
-       ):
-        # get conjugation details
-        response = requests.get('https://koreanverb.app/?search=' + token[0])
-
-        # parse the content
-        content = BeautifulSoup(response.text, 'lxml')
-
-        # extract HTML table
-        table = content.find('table')
-
-        # extract table data
-        conjugation_details = list(filter(None, [
-            ': '.join([col.text.replace('declarative ', '').replace(' informal high', '') for col in row.find_all('td')])
-            for row in
-            table.find_all('tr')
-            if 'declarative present informal high' in row.text or
-               'declarative past informal high' in row.text or
-               'declarative future informal high' in row.text
-        ]))
+        # parse the response
+        translated_text = json.loads(response.text)['translated_text']
         
         # print debug info
-        print('Conjugationg...', token[0] + ': ', conjugation_details)
-    
-    # init details
-    congation_details = []
-    
-    # skip punctuation, foreign words and duplicates
-    try:
-        if (token[1] == 'Punctuation' or token[1] == 'Foreign' or vocabulary[1]['Word'] == token[0]):
-            # print debug info
-            print('Skipping garbage...', token[0] + ': ', translated_text, ', Type:', token[1])
-            continue
-    except:
-        pass
+        count += 1
+        print('Translating...', token[0] + ': ',
+               translated_text, ', Type:',
+               token[1], ', word',
+               count,
+               'out of', len(tokenized_text),
+               ' words')
+        
+        # optionally request conjugation details
+        if ('다' in token[0] and
+            token[1] != 'Full sentence' and
+            token[1] in ['Verb', 'Adverb', 'Adjective']
+           ):
+            # get conjugation details
+            response = requests.get('https://koreanverb.app/?search=' + token[0])
 
-    # append token to vocabulary
-    vocabulary.append({
-        'Word': token[0],
-        'Type': token[1],
-        'Translation': translated_text,
-        'Present tense': '',
-        'Past tense': '',
-        'Future tense': ''
-    })
-    
-    try:
-        if (token[0][0] == conjugation_details[0].split(': ')[-1][0]):
-            vocabulary[-1]['Present tense'] = conjugation_details[0].split(': ')[-1]
-            vocabulary[-1]['Past tense'] = conjugation_details[1].split(': ')[-1]
-            vocabulary[-1]['Future tense'] = conjugation_details[2].split(': ')[-1]
+            # parse the content
+            content = BeautifulSoup(response.text, 'lxml')
+
+            # extract HTML table
+            table = content.find('table')
+
+            # extract table data
+            conjugation_details = list(filter(None, [
+                ': '.join([col.text.replace('declarative ', '').replace(' informal high', '') for col in row.find_all('td')])
+                for row in
+                table.find_all('tr')
+                if 'declarative present informal high' in row.text or
+                   'declarative past informal high' in row.text or
+                   'declarative future informal high' in row.text
+            ]))
+            
+            # print debug info
+            print('Conjugationg...', token[0] + ': ', conjugation_details)
+        
+        # init details
+        congation_details = []
+        
+        # skip punctuation, foreign words and duplicates
+        try:
+            if (token[1] == 'Punctuation' or token[1] == 'Foreign' or vocabulary[1]['Word'] == token[0]):
+                # print debug info
+                print('Skipping garbage...', token[0] + ': ', translated_text, ', Type:', token[1])
+                continue
+        except:
+            pass
+
+        # append token to vocabulary
+        vocabulary.append({
+            'Word': token[0],
+            'Type': token[1],
+            'Translation': translated_text,
+            'Present tense': '',
+            'Past tense': '',
+            'Future tense': ''
+        })
+        
+        try:
+            if (token[0][0] == conjugation_details[0].split(': ')[-1][0]):
+                vocabulary[-1]['Present tense'] = conjugation_details[0].split(': ')[-1]
+                vocabulary[-1]['Past tense'] = conjugation_details[1].split(': ')[-1]
+                vocabulary[-1]['Future tense'] = conjugation_details[2].split(': ')[-1]
+        except:
+            pass
     except:
-        pass
+        print('Failed to translate: ', token)
 
 # output HTML file template
 html_template = '''
