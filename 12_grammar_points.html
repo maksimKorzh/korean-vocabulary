@@ -1,142 +1,4 @@
-##########################################
-#
-# A script to auto generate voacabulary
-#   from the given input Korean text
-#
-##########################################
 
-# print debug info
-print('Loading...')
-    
-# packages
-from konlpy.tag import Okt
-import requests
-from bs4 import BeautifulSoup
-from jinja2 import Environment
-import json
-import csv
-
-# vocabulary
-vocabulary = []
-
-# print debug info
-print('Creating tokenizer instance...')
-
-# create OKT instance
-okt = Okt();
-
-korean_text = ''
-
-# open input file
-with open('korean.txt') as f:
-    # init input text
-    korean_text = f.read()
-    
-    # print debug info
-    print('Tokenizing Korean text...', end='')
-
-    # tokenize text
-    tokenized_text = okt.pos(korean_text, norm=True, stem=True)
-    
-    # print debug info
-    print('Done')
-
-# append full sentence to the list of tokens
-tokenized_text.append((korean_text, 'Full sentence'))
-
-# word count
-count = 0
-
-# loop over tokens
-for token in tokenized_text:
-    try:
-        # translate.com POST request data payload
-        payload = {
-            'text_to_translate': token[0],
-            'source_lang': 'ko',
-            'translated_lang': 'en',
-            'use_cache_only': 'false'
-        }
-
-        # make HTTP POST request to translate.com
-        response = requests.post(
-            'https://www.translate.com/translator/ajax_translate',
-            headers={'user-agent': 'Translate'}, # change to any if daily dose of requests is exhausted
-            data=payload
-        )
-
-        # parse the response
-        translated_text = json.loads(response.text)['translated_text']
-        
-        # print debug info
-        count += 1
-        print('Translating...', token[0] + ': ',
-               translated_text, ', Type:',
-               token[1], ', word',
-               count,
-               'out of', len(tokenized_text),
-               ' words')
-        
-        # init details
-        congation_details = []
-        
-        # optionally request conjugation details
-        if (token[1] in ['Verb', 'Adverb', 'Adjective']):
-            # get conjugation details
-            response = requests.get('https://koreanverb.app/?search=' + token[0])
-
-            # parse the content
-            content = BeautifulSoup(response.text, 'lxml')
-
-            # extract HTML table
-            table = content.find('table')
-
-            # extract table data
-            conjugation_details = list(filter(None, [
-                ': '.join([col.text.replace('declarative ', '').replace(' informal high', '') for col in row.find_all('td')])
-                for row in
-                table.find_all('tr')
-                if 'declarative present informal high' in row.text or
-                   'declarative past informal high' in row.text or
-                   'declarative future informal high' in row.text
-            ]))
-            
-            # print debug info
-            print('Conjugating...', token[0] + ': ', conjugation_details)
-        
-        # skip punctuation, foreign words and duplicates
-        try:
-            if (token[1] == 'Punctuation' or token[1] == 'Foreign'):
-                # print debug info
-                print('Skipping garbage...')
-                continue
-        except Exception as e:
-            print('Error skipping token:', e)
-
-        # append token to vocabulary
-        vocabulary.append({
-            'Word': token[0],
-            'Type': token[1],
-            'Translation': translated_text,
-            'Present tense': '',
-            'Past tense': '',
-            'Future tense': ''
-        })
-        
-        try:
-            if (token[1] in ['Verb', 'Adverb', 'Adjective']):
-                vocabulary[-1]['Present tense'] = conjugation_details[0].split(': ')[-1]
-                vocabulary[-1]['Past tense'] = conjugation_details[1].split(': ')[-1]
-                vocabulary[-1]['Future tense'] = conjugation_details[2].split(': ')[-1]
-        
-        except:
-            pass
-
-    except:
-        print('Failed to translate: ', token)
-
-# output HTML file template
-html_template = '''
 <!DOCTYPE html>
 
 <html>
@@ -181,19 +43,247 @@ html_template = '''
             <table id="vocabulary" class="display table nowrap responsive" style="width: 100%">
               <thead>
                 <tr>
-                  {% for header in results[0].keys() %}
-                    <th>{{ header }}</th>
-                  {% endfor %}
+                  
+                    <th>Word</th>
+                  
+                    <th>Type</th>
+                  
+                    <th>Translation</th>
+                  
+                    <th>Present tense</th>
+                  
+                    <th>Past tense</th>
+                  
+                    <th>Future tense</th>
+                  
                 </tr>
               </thead>
               <tbody>
-                {% for row in results[0: -1] %}
+                
                   <tr>
-                    {% for index in range(0, len(fieldnames)) %}
-                      <td>{{row[fieldnames[index]]}}</td>
-                    {% endfor %}
+                    
+                      <td>내일</td>
+                    
+                      <td>Noun</td>
+                    
+                      <td>tomorrow</td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
                   </tr>
-                {% endfor %}
+                
+                  <tr>
+                    
+                      <td>은</td>
+                    
+                      <td>Josa</td>
+                    
+                      <td>Eun</td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>오늘</td>
+                    
+                      <td>Noun</td>
+                    
+                      <td>today</td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>보다</td>
+                    
+                      <td>Josa</td>
+                    
+                      <td>see</td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>추워지다</td>
+                    
+                      <td>Verb</td>
+                    
+                      <td>It gets cold</td>
+                    
+                      <td>추워져요</td>
+                    
+                      <td>추워졌어요</td>
+                    
+                      <td>추워질 거예요</td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>수도</td>
+                    
+                      <td>Noun</td>
+                    
+                      <td>capital city</td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>있다</td>
+                    
+                      <td>Adjective</td>
+                    
+                      <td>There is</td>
+                    
+                      <td>있어요</td>
+                    
+                      <td>있었어요</td>
+                    
+                      <td>있을 거예요</td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>옷</td>
+                    
+                      <td>Noun</td>
+                    
+                      <td>outfit</td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>을</td>
+                    
+                      <td>Josa</td>
+                    
+                      <td>a</td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>따뜻하다</td>
+                    
+                      <td>Adjective</td>
+                    
+                      <td>warm</td>
+                    
+                      <td>따뜻해요</td>
+                    
+                      <td>따뜻했어요</td>
+                    
+                      <td>따뜻할 거예요</td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>입다</td>
+                    
+                      <td>Verb</td>
+                    
+                      <td>wear</td>
+                    
+                      <td>입어요</td>
+                    
+                      <td>입었어요</td>
+                    
+                      <td>입을 거예요</td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>되다</td>
+                    
+                      <td>Verb</td>
+                    
+                      <td>become</td>
+                    
+                      <td>돼요</td>
+                    
+                      <td>됐어요</td>
+                    
+                      <td>될 거예요</td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>것</td>
+                    
+                      <td>Noun</td>
+                    
+                      <td>THING</td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                      <td></td>
+                    
+                  </tr>
+                
+                  <tr>
+                    
+                      <td>같다</td>
+                    
+                      <td>Adjective</td>
+                    
+                      <td>similar</td>
+                    
+                      <td>같아요</td>
+                    
+                      <td>같았어요</td>
+                    
+                      <td>같을 거예요</td>
+                    
+                  </tr>
+                
               </tbody>
             </table>
           </div>
@@ -282,10 +372,11 @@ html_template = '''
       </div>
       <div class="card-footer text-center">
         <strong>Original Korean text:</strong><br>
-        {{ korean_text }}
+        내일은 오늘보다 추워질 수도 있으니까<br>옷을 따뜻하게 입어야 될 것 같아요<br>
         <hr>
         <strong>English translation:</strong><br>
-        {{ full_translation }}
+        Tomorrow may be colder than today.<br>
+I think you're going to have to dress warm.<br>
         <hr>
         <small>freesoft.for.people@gmail.com</small>
       </div>
@@ -424,38 +515,4 @@ html_template = '''
       text.selectionEnd = startPos - 1;
     }
   </script>
-</html>'''
-
-# render HTML template
-html_output = Environment().from_string(html_template).render(
-    results=vocabulary,
-    fieldnames=[col for col in vocabulary[0].keys()],
-    korean_text=korean_text.replace('\n', '<br>'),
-    full_translation=vocabulary[-1]['Translation'].replace('.', '.<br>').replace(',', ',<br>'),
-    len=len
-)
-
-# write HTML file
-with open('./html/vocabulary.html', 'w') as f:
-    f.write(html_output)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+</html>
