@@ -6,7 +6,7 @@ from any Korean text using python, konlpy & Datatables.
 [![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/INq9pty5tes/0.jpg)](https://www.youtube.com/watch?v=INq9pty5tes&list=PLLfIBXQeu3ab1FsfT8TkTgb3AfxrcQKTQ)
 
 # Example auto generated vocabularies output here:
-<a href="https://maksimkorzh.github.io/korean-vocabulary/korean.html">6000+ Most commonly used Koren words</a><br>
+<a href="https://maksimkorzh.github.io/korean-vocabulary/korean.html">5000+ Most commonly used Koren words</a><br>
 <a href="https://maksimkorzh.github.io/korean-vocabulary/12_grammar_points.html">12 grammar points sentence by Talk To Me In Korean</a><br>
 <a href="https://maksimkorzh.github.io/korean-vocabulary/long_sentence.html">A very long Korean sentence by Talk To Me In Korean</a><br>
 <br>
