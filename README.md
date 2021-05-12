@@ -16,11 +16,11 @@ open in the browser on whatever device!
 # How to use it
 1. Download source code
 2. Install dependencies:
-    pip install requests
-    pip install bs4
-    pip install lxml
-    pip install Jinja2
-    pip install konlpy
+- pip install requests
+- pip install bs4
+- pip install lxml
+- pip install Jinja2
+- pip install konlpy
 3. Copy/paste Korean text to "korean.txt"
 4. Run "python vocabulary.py"
 5. See "html/vocabulary.html" for output
