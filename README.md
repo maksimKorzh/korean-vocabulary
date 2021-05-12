@@ -26,5 +26,4 @@ open in the browser on whatever device!
 5. See "html/vocabulary.html" for output
 
 <br>
-<br>
 HAPPY KOREAN LEARNING!
