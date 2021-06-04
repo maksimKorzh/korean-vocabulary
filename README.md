@@ -9,7 +9,7 @@ from any Korean text using python, konlpy & Datatables.
 <a href="https://maksimkorzh.github.io/korean-vocabulary/korean.html">5000+ Most commonly used Koren words</a><br>
 <a href="https://maksimkorzh.github.io/korean-vocabulary/12_grammar_points.html">12 grammar points sentence by Talk To Me In Korean</a><br>
 <a href="https://maksimkorzh.github.io/korean-vocabulary/long_sentence.html">A very long Korean sentence by Talk To Me In Korean</a><br>
-<a href="https://maksimkorzh.github.io/korean-vocabulary/email.html">A very long Korean sentence by Talk To Me In Korean</a><br>
+<a href="https://maksimkorzh.github.io/korean-vocabulary/email.html">Vocab from emails</a><br>
 <br>
 Every vocabulary is a static HTML web page that you can<br>
 open in the browser on whatever device!
